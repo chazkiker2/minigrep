@@ -19,7 +19,6 @@ pub struct Config {
 	pub case_sensitive: bool,
 }
 
-
 impl Config {
 	/// attempt to create a new `Config` from given arguments
 	pub fn new(args: &[String]) -> Result<Config, &str> {
@@ -37,7 +36,6 @@ impl Config {
 	}
 }
 
-
 /// search through each line in given `contents` and return any lines containing a match to the `query`
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 	let mut results = Vec::new();
@@ -50,7 +48,6 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 
 	results
 }
-
 
 /// search through each line in given `contents` and return any lines containing
 /// a case-insensitive match to the `query`.
@@ -67,7 +64,6 @@ pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a st
 
 	results
 }
-
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 	let contents = fs::read_to_string(&config.filename)?;
@@ -93,7 +89,6 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 mod tests {
 	use super::*;
 
-
 	/// test query with no matching lines
 	#[test]
 	fn case_sensitive_no_result() {
@@ -101,7 +96,6 @@ mod tests {
 		let contents = "no such thing";
 		assert_eq!(vec![] as Vec<&str>, search(query, contents));
 	}
-
 
 	/// test query with one matching line
 	#[test]
@@ -114,7 +108,6 @@ Pick three.";
 
 		assert_eq!(vec!["safe, fast, productive."], search(query, contents));
 	}
-
 
 	/// test case-insensitive query with matching result
 	#[test]
