@@ -6,7 +6,8 @@ use std::{
 	string::String,
 };
 
-/// a fully valid minigrep command
+
+/// a fully valid `minigrep` command
 ///
 /// consists of a `query` to search for and a `filename` to search within
 pub struct Config {
@@ -14,12 +15,13 @@ pub struct Config {
 	pub query: String,
 	/// the file to search within
 	pub filename: String,
+	/// whether query should be case sensitive or not
 	pub case_sensitive: bool,
 }
 
 
 impl Config {
-	/// attempt to create a new config from given arguments
+	/// attempt to create a new `Config` from given arguments
 	pub fn new(args: &[String]) -> Result<Config, &str> {
 		if args.len() < 3 {
 			return Err("not enough arguments");
@@ -35,6 +37,7 @@ impl Config {
 	}
 }
 
+
 /// search through each line in given `contents` and return any lines containing a match to the `query`
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 	let mut results = Vec::new();
@@ -48,6 +51,11 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 	results
 }
 
+
+/// search through each line in given `contents` and return any lines containing
+/// a case-insensitive match to the `query`.
+///
+/// (i.e., query `"RuSt"` would match line `"rust"`)
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 	let query = query.to_lowercase();
 	let mut results = Vec::new();
@@ -77,6 +85,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 	}
 
 	Ok(())
+	// left off here: https://doc.rust-lang.org/book/ch12-06-writing-to-stderr-instead-of-stdout.html#writing-error-messages-to-standard-error-instead-of-standard-output
 }
 
 
@@ -105,6 +114,7 @@ Pick three.";
 
 		assert_eq!(vec!["safe, fast, productive."], search(query, contents));
 	}
+
 
 	/// test case-insensitive query with matching result
 	#[test]
