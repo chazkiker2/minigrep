@@ -6,11 +6,9 @@ use minigrep::Config;
 ///
 /// this is the main entry-point for the `minigrep` CLI
 fn main() {
-    // command line arguments input by user
-    let args: Vec<String> = env::args().collect();
-
-    // try to parse arguments into minigrep config; convey error and exit if fail
-    let config = Config::new(&args).unwrap_or_else(|err| {
+    // try to parse CLI arguments into minigrep config;
+    let config = Config::new(env::args()).unwrap_or_else(|err| {
+        // if fail: convey error and exit
         eprintln!("Problem parsing arguments: {}", err);
         process::exit(1);
     });

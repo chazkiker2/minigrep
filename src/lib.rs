@@ -14,13 +14,18 @@ pub struct Config {
 
 impl Config {
     /// attempt to create a new `Config` from given arguments
-    pub fn new(args: &[String]) -> Result<Config, &str> {
-        if args.len() < 3 {
-            return Err("not enough arguments");
-        }
+    pub fn new(mut args: env::Args) -> Result<Config, &'static str> {
+        args.next();
 
-        let query = args[1].clone();
-        let filename = args[2].clone();
+        let query = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a query string"),
+        };
+
+        let filename = match args.next() {
+            Some(arg) => arg,
+            None => return Err("Didn't get a file name"),
+        };
 
         let case_sensitive = env::var("CASE_INSENSITIVE").is_err();
 
@@ -34,15 +39,10 @@ impl Config {
 
 /// search through each line in given `contents` and return any lines containing a match to the `query`
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
-    let mut results = Vec::new();
-
-    for line in contents.lines() {
-        if line.contains(query) {
-            results.push(line);
-        }
-    }
-
-    results
+    contents
+        .lines()
+        .filter(|line| line.contains(query))
+        .collect()
 }
 
 /// search through each line in given `contents` and return any lines containing
@@ -51,14 +51,10 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
 /// (i.e., query `"RuSt"` would match line `"rust"`)
 pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let query = query.to_lowercase();
-    let mut results = Vec::new();
-    for line in contents.lines() {
-        if line.to_lowercase().contains(&query) {
-            results.push(line);
-        }
-    }
-
-    results
+    contents
+        .lines()
+        .filter(|line| line.to_lowercase().contains(&query))
+        .collect()
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
@@ -75,12 +71,15 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
         config.query, config.filename
     );
 
-    for line in results {
-        println!("{}", line);
+    if results.len() == 0 {
+        println!("No lines matched your query.");
+    } else {
+        for line in results {
+            println!("{}", line);
+        }
     }
 
     Ok(())
-    // left off here: https://doc.rust-lang.org/book/ch12-06-writing-to-stderr-instead-of-stdout.html#writing-error-messages-to-standard-error-instead-of-standard-output
 }
 
 #[cfg(test)]
@@ -92,6 +91,7 @@ mod tests {
     fn case_sensitive_no_result() {
         let query = "philanthropist";
         let contents = "no such thing";
+
         assert_eq!(vec![] as Vec<&str>, search(query, contents));
     }
 
@@ -99,10 +99,7 @@ mod tests {
     #[test]
     fn case_sensitive_one_result() {
         let query = "duct"; // expect 'duct' in 'productive'
-        let contents = "\
-Rust:
-safe, fast, productive.
-Pick three.";
+        let contents = "Rust:\nsafe, fast, productive.\nPick three.";
 
         assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
@@ -111,11 +108,7 @@ Pick three.";
     #[test]
     fn case_insensitive_one_result() {
         let query = "rUsT";
-        let contents = "\
-Rust:
-safe, fast, productive.
-Pick three.
-Trust me.";
+        let contents = "Rust:\nsafe, fast, productive.\nPick three.\nTrust me.";
 
         assert_eq!(
             vec!["Rust:", "Trust me."],
