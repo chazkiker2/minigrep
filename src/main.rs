@@ -1,6 +1,6 @@
 use std::{env, process};
 
-use minigrep::Config;
+use minigrep_test_package_001::Config;
 
 /// run `minigrep` CLI application
 ///
@@ -14,7 +14,7 @@ fn main() {
     });
 
     // try to run minigrep; convey error and exit if fail
-    if let Err(e) = minigrep::run(config) {
+    if let Err(e) = minigrep_test_package_001::run(config) {
         eprintln!("Application error: {}", e);
         process::exit(1);
     }
