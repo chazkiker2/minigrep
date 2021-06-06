@@ -1,5 +1,5 @@
 [package]
-name = "minigrep"
+name = "minigrep_test_package_001"
 license = "MIT OR Apache-2.0"
 description="A small CLI implementation of the `grep` command, written in Rust."
 repository="https://github.com/chazkiker2/minigrep.git"
