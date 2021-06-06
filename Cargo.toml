@@ -1,5 +1,9 @@
 [package]
 name = "minigrep"
+licence="MIT"
+description="A small CLI implementation of the `grep` command, written in Rust."
+repository="https://github.com/chazkiker2/minigrep.git"
+homepage="https://github.com/chazkiker2/minigrep.git"
 version = "0.1.0"
 authors = ["chaz-kiker <chaz-kiker@lambdastudents.com>"]
 edition = "2018"
@@ -7,3 +11,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[profile.dev]
+opt-level = 1
